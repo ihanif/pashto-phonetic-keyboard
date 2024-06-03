@@ -1,4 +1,4 @@
-.keyboard-icon {
+/* .keyboard-icon {
   width: 20px;
   height: 20px;
   margin-left: 5px;
@@ -62,8 +62,6 @@
   border: 1px solid #d43f3a;
   padding: 10px;
   cursor: pointer;
-  margin-top: 10px;
-  display: block;
   width: 100%;
   text-align: center;
 }
@@ -74,4 +72,153 @@
 
 .keyboard-space {
   flex: 3;
+  padding: 10px;
+}
+ */
+
+/* .keyboard-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.keyboard-button {
+  margin: 2px;
+  padding: 10px;
+  font-size: 14px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.keyboard-button span {
+  display: block;
+}
+
+.keyboard-button .english {
+  font-size: 12px;
+  color: #555;
+}
+
+.keyboard-button .pashto {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.keyboard-button.keyboard-space {
+  width: 200px;
+}
+
+.keyboard-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f00;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 5px 10px;
+} */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.input.full-width {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+  flex-grow: 1;
+}
+
+.keyboard-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.keyboard-button {
+  margin: 2px;
+  padding: 10px;
+  font-size: 14px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.keyboard-button span {
+  display: block;
+}
+
+.keyboard-button .english {
+  font-size: 12px;
+  color: #555;
+}
+
+.keyboard-button .pashto {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.keyboard-button.keyboard-space {
+  width: 200px;
+}
+
+.keyboard-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f00;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 5px 10px;
 }

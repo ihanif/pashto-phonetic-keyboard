@@ -137,9 +137,20 @@ function transliterate(input) {
 }
 
 function createKeyboardOverlay() {
+  const existingOverlay = document.getElementById("keyboard-overlay");
+  if (existingOverlay) existingOverlay.remove();
+
   const overlay = document.createElement("div");
   overlay.className = "keyboard-overlay";
   overlay.id = "keyboard-overlay";
+
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "keyboard-close";
+  closeBtn.innerText = "Close";
+  closeBtn.addEventListener("click", () => {
+    document.body.removeChild(overlay);
+  });
+  overlay.appendChild(closeBtn);
 
   qwertyLayout.forEach((row) => {
     const rowDiv = document.createElement("div");
@@ -159,14 +170,6 @@ function createKeyboardOverlay() {
 
     overlay.appendChild(rowDiv);
   });
-
-  const closeBtn = document.createElement("button");
-  closeBtn.className = "keyboard-close";
-  closeBtn.innerText = "Close";
-  closeBtn.addEventListener("click", () => {
-    document.body.removeChild(overlay);
-  });
-  overlay.appendChild(closeBtn);
 
   document.body.appendChild(overlay);
 }
@@ -212,7 +215,7 @@ function handleButtonClick(key) {
     activeInput.selectionStart = cursorPos + 1;
     activeInput.selectionEnd = cursorPos + 1;
   } else {
-    const actualKey = isShiftActive && shiftMap[key] ? shiftMap[key] : key;
+    const actualKey = isShiftActive ? shiftMap[key] : key;
     const cursorPos = activeInput.selectionStart;
     const before = activeInput.value.slice(0, cursorPos);
     const after = activeInput.value.slice(cursorPos);
@@ -241,7 +244,10 @@ function handleKeyPress(event) {
     activeInput === inputElement
   ) {
     const key = event.key;
-    if (pashtoMap[key]) {
+    if (key === "Shift") {
+      isShiftActive = !isShiftActive;
+      updateKeyboardOverlay();
+    } else if (pashtoMap[key]) {
       event.preventDefault();
       const cursorPos = inputElement.selectionStart;
       const before = inputElement.value.slice(0, cursorPos);

@@ -1,26 +1,24 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Pashto Phonetic Keyboard",
   "version": "1.0",
-  "description": "A Chrome extension to type Pashto using a phonetic keyboard.",
-  "permissions": ["activeTab", "scripting"],
-  "background": {
-    "service_worker": "background.js"
+  "description": "Pashto Phonetic Keyboard Chrome Extension",
+  "icons": {
+    "128": "icon.png"
   },
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "128": "icon.png"
-    }
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["styles.css"]
+      "css": ["styles.css"],
+      "js": ["content.js"]
     }
   ],
-  "icons": {
-    "128": "icon.png"
-  }
+  "permissions": ["activeTab"]
 }
