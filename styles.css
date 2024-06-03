@@ -1,0 +1,77 @@
+.keyboard-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.keyboard-overlay {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: #fff;
+}
+
+.keyboard-overlay .keyboard-row {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.keyboard-button {
+  background-color: #444;
+  border: 1px solid #666;
+  padding: 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+}
+
+.keyboard-button span {
+  display: block;
+}
+
+.keyboard-button .english {
+  font-size: 0.8em;
+}
+
+.keyboard-button .pashto {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.keyboard-button:hover {
+  background-color: #555;
+}
+
+.keyboard-close {
+  background-color: #d9534f;
+  color: #fff;
+  border: 1px solid #d43f3a;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.keyboard-close:hover {
+  background-color: #c9302c;
+}
+
+.keyboard-space {
+  flex: 3;
+}
