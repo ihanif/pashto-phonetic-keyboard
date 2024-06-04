@@ -144,13 +144,49 @@ function createKeyboardOverlay() {
   overlay.className = "keyboard-overlay";
   overlay.id = "keyboard-overlay";
 
-  const closeBtn = document.createElement("button");
+  /* const closeBtn = document.createElement("button");
   closeBtn.className = "keyboard-close";
   closeBtn.innerText = "Close";
   closeBtn.addEventListener("click", () => {
     document.body.removeChild(overlay);
   });
-  overlay.appendChild(closeBtn);
+  overlay.appendChild(closeBtn); */
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "keyboard-toolbar";
+
+  const toolbarButtons = document.createElement("div");
+  toolbarButtons.className = "toolbar-buttons";
+
+  const closeButton = document.createElement("button");
+  closeButton.className = "keyboard-close";
+  closeButton.textContent = "X";
+  closeButton.addEventListener("click", () => {
+    overlay.remove();
+  });
+
+  const minimizeButton = document.createElement("button");
+  minimizeButton.className = "keyboard-minimize";
+  minimizeButton.textContent = "-";
+  minimizeButton.addEventListener("click", () => {
+    if (overlay.style.display === "none") {
+      overlay.style.display = "flex";
+    } else {
+      overlay.style.display = "none";
+    }
+  });
+
+  toolbarButtons.appendChild(closeButton);
+  toolbarButtons.appendChild(minimizeButton);
+
+  const toolbarTitle = document.createElement("div");
+  toolbarTitle.className = "toolbar-title";
+  toolbarTitle.textContent = "Pashto Phonetic Keyboard";
+
+  toolbar.appendChild(toolbarButtons);
+  toolbar.appendChild(toolbarTitle);
+
+  overlay.appendChild(toolbar);
 
   qwertyLayout.forEach((row) => {
     const rowDiv = document.createElement("div");
@@ -172,6 +208,78 @@ function createKeyboardOverlay() {
   });
 
   document.body.appendChild(overlay);
+  //makeDraggable(overlay);
+  makeDraggable(toolbar, overlay);
+}
+
+/* function makeDraggable(element) {
+  let pos1 = 0,
+    pos2 = 0,
+    pos3 = 0,
+    pos4 = 0;
+  if (document.querySelector(".keyboard-close")) {
+    document.querySelector(".keyboard-close").onmousedown = dragMouseDown;
+  } else {
+    element.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    element.style.top = element.offsetTop - pos2 + "px";
+    element.style.left = element.offsetLeft - pos1 + "px";
+  }
+
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+} */
+
+function makeDraggable(dragHandle, element) {
+  let pos1 = 0,
+    pos2 = 0,
+    pos3 = 0,
+    pos4 = 0;
+  dragHandle.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    element.style.top = element.offsetTop - pos2 + "px";
+    element.style.left = element.offsetLeft - pos1 + "px";
+  }
+
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
 }
 
 function updateKeyboardOverlay() {
