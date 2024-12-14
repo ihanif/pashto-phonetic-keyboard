@@ -66,11 +66,93 @@ const pashtoMap = {
 };
 
 const qwertyLayout = [
-  ["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
-  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
-  ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter"],
-  ["Shift", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift"],
-  ["Space"],
+  [
+    { key: "esc", type: "function" },
+    { key: "🔆", type: "function" },
+    { key: "🔅", type: "function" },
+    { key: "⧉", type: "function" },
+    { key: "🔍", type: "function" },
+    { key: "🎤", type: "function" },
+    { key: "🌙", type: "function" },
+    { key: "⏮", type: "function" },
+    { key: "⏯", type: "function" },
+    { key: "⏭", type: "function" },
+    { key: "🔇", type: "function" },
+    { key: "🔉", type: "function" },
+    { key: "🔊", type: "function" },
+    { key: "☰", type: "function" },
+  ],
+  [
+    { key: "`", text: "÷" },
+    { key: "1", text: "١" },
+    { key: "2", text: "٢" },
+    { key: "3", text: "٣" },
+    { key: "4", text: "٤" },
+    { key: "5", text: "٥" },
+    { key: "6", text: "٦" },
+    { key: "7", text: "٧" },
+    { key: "8", text: "٨" },
+    { key: "9", text: "٩" },
+    { key: "0", text: "٠" },
+    { key: "-", text: "-" },
+    { key: "=", text: "=" },
+    { key: "⌫", type: "backspace" },
+  ],
+  [
+    { key: "Tab", type: "tab" },
+    { key: "q", text: "ق" },
+    { key: "w", text: "و" },
+    { key: "e", text: "ع" },
+    { key: "r", text: "ر" },
+    { key: "t", text: "ت" },
+    { key: "y", text: "ی" },
+    { key: "u", text: "ئ" },
+    { key: "i", text: "ي" },
+    { key: "o", text: "ه" },
+    { key: "p", text: "پ" },
+    { key: "[", text: "{" },
+    { key: "]", text: "}" },
+  ],
+  [
+    { key: "CapsLock", type: "capslock" },
+    { key: "a", text: "ا" },
+    { key: "s", text: "س" },
+    { key: "d", text: "د" },
+    { key: "f", text: "ف" },
+    { key: "g", text: "گ" },
+    { key: "h", text: "ح" },
+    { key: "j", text: "ج" },
+    { key: "k", text: "ک" },
+    { key: "l", text: "ل" },
+    { key: ";", text: ":" },
+    { key: "'", text: '"' },
+    { key: "\\", text: '\\' },
+    { key: "Enter", type: "enter" },
+  ],
+  [
+    { key: "Shift", type: "shift" },
+    {key: "`", type:"`"},
+    { key: "z", text: "ز" },
+    { key: "x", text: "س" },
+    { key: "c", text: "چ" },
+    { key: "v", text: "ژ" },
+    { key: "b", text: "ب" },
+    { key: "n", text: "ن" },
+    { key: "m", text: "م" },
+    { key: ",", text: "<" },
+    { key: ".", text: ">" },
+    { key: "/", text: "؟" },
+  ],
+  [
+    { key: "fn", type: "function" },
+    { key: "Ctrl", type: "function" },
+    { key: "Alt", type: "function" },
+    { key: "Cmd", type: "function" },
+    { key: "Space", type: "space" },
+    { key: "Cmd", type: "function" },
+    { key: "Alt", type: "function" },
+
+  ],
 ];
 
 const shiftMap = {
@@ -141,34 +223,49 @@ function transliterate(input) {
 function createKeyboardOverlay() {
   const existingOverlay = document.getElementById("keyboard-overlay");
   if (existingOverlay) existingOverlay.remove();
-  if (!activeInput) 
-return;
+  if (!activeInput) return;
 
   const overlay = document.createElement("div");
-  overlay.className = "keyboard-overlay";
+  overlay.className = "keyboard-overlay" + (isKeyboardEnabled ? " visible" : "");
   overlay.id = "keyboard-overlay";
+
+  // Create toolbar
+  const toolbar = document.createElement("div");
+  toolbar.className = "keyboard-toolbar";
+  
+  const title = document.createElement("span");
+  title.className = "keyboard-title";
+  title.textContent = "Keyboard";
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "keyboard-close";
-  closeBtn.innerText = "Close";
-  closeBtn.addEventListener("click", () => {
-    document.body.removeChild(overlay);
-  });
-  overlay.appendChild(closeBtn);
+  closeBtn.innerHTML = "×";
+  closeBtn.addEventListener("click", () => overlay.remove());
 
-  qwertyLayout.forEach((row) => {
+  toolbar.appendChild(title);
+  toolbar.appendChild(closeBtn);
+  overlay.appendChild(toolbar);
+
+  // Create keyboard rows
+  qwertyLayout.forEach(row => {
     const rowDiv = document.createElement("div");
     rowDiv.className = "keyboard-row";
 
-    row.forEach((key) => {
+    row.forEach(keyObj => {
       const button = document.createElement("button");
-      button.className = `keyboard-button ${
-        key === "Space" ? "keyboard-space" : ""
-      }`;
-      const displayKey = isShiftActive && shiftMap[key] ? shiftMap[key] : key;
-      const displayPashto = pashtoMap[displayKey] || "";
-      button.innerHTML = `<span class="english">${displayKey}</span><span class="pashto">${displayPashto}</span>`;
-      button.addEventListener("click", () => handleButtonClick(key));
+      button.className = `keyboard-button ${keyObj.type || ""}`;
+      
+      if (keyObj.type === "function") {
+        button.innerHTML = `<span class="pashto">${keyObj.key}</span>`;
+      } else {
+        const displayPashto = pashtoMap[keyObj.key] || keyObj.text || "";
+        button.innerHTML = `
+          <span class="english">${keyObj.key}</span>
+          <span class="pashto">${displayPashto}</span>
+        `;
+      }
+      
+      button.addEventListener("click", () => handleButtonClick(keyObj.key));
       rowDiv.appendChild(button);
     });
 
@@ -256,11 +353,14 @@ function createControlButtons(inputElement) {
   keyboardToggle.addEventListener('click', () => {
     isKeyboardEnabled = !isKeyboardEnabled;
     keyboardToggle.classList.toggle('active', isKeyboardEnabled);
-    const overlay = document.getElementById('keyboard-overlay');
-    if (overlay) {
-      overlay.style.display = isKeyboardEnabled ? 'flex' : 'none';
-    } else if (isKeyboardEnabled) {
+    
+    let overlay = document.getElementById('keyboard-overlay');
+    if (!overlay && isKeyboardEnabled) {
       createKeyboardOverlay();
+      overlay = document.getElementById('keyboard-overlay');
+    }
+    if (overlay) {
+      overlay.classList.toggle('visible', isKeyboardEnabled);
     }
   });
 
@@ -291,24 +391,28 @@ function createControlButtons(inputElement) {
 }
 
 function addPashtoKeyboard(inputElement) {
+  if (inputElement.dataset.hasPashtoKeyboard) return;
+  inputElement.dataset.hasPashtoKeyboard = 'true';
+  
   createControlButtons(inputElement);
   
   inputElement.addEventListener('focus', () => {
     activeInput = inputElement;
   });
   
-  inputElement.addEventListener('blur', () => {
-    if (activeInput === inputElement) {
+  inputElement.addEventListener('blur', (event) => {
+    const keyboard = document.getElementById('keyboard-overlay');
+    if (keyboard && !keyboard.contains(event.relatedTarget)) {
       activeInput = null;
     }
   });
   
-  inputElement.addEventListener('keypress', handleKeyPress);
+  inputElement.addEventListener('keypress', handleKeyboardInput);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initializePashtoKeyboard() {
   const inputs = document.querySelectorAll(
-    'input[type="text"], textarea, div[role="textbox"], div[contenteditable="true"]'
+    'input[type="text"], textarea, [contenteditable="true"]'
   );
   inputs.forEach(addPashtoKeyboard);
   
@@ -316,9 +420,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
-        if (node.nodeType === 1) { // Element node
+        if (node.nodeType === 1) {
           const inputs = node.querySelectorAll(
-            'input[type="text"], textarea, div[role="textbox"], div[contenteditable="true"]'
+            'input[type="text"], textarea, [contenteditable="true"]'
           );
           inputs.forEach(addPashtoKeyboard);
         }
@@ -330,4 +434,21 @@ document.addEventListener('DOMContentLoaded', () => {
     childList: true,
     subtree: true
   });
-});
+}
+
+// Initialize immediately and also on DOMContentLoaded
+initializePashtoKeyboard();
+document.addEventListener('DOMContentLoaded', initializePashtoKeyboard);
+
+// Add this function to handle keyboard input
+function handleKeyboardInput(event) {
+  if (!isKeybindingEnabled || !activeInput) return;
+  
+  const key = event.key.toLowerCase();
+  if (pashtoMap[key]) {
+    event.preventDefault();
+    const start = activeInput.selectionStart;
+    const end = activeInput.selectionEnd;
+    insertText(pashtoMap[key], start !== end, start, end);
+  }
+}
