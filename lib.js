@@ -1,36 +1,45 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const text = params.get('text');
+  if (text) {
+    const textarea = document.getElementById('popup-input');
+    textarea.value = text;
+  }
+});
+
 const pashtoMap = {
   a: "ا",
   A: "آ",
   b: "ب",
-  B: "پ",
+  B: "",
   c: "چ",
-  C: "ځ",
+  C: "ث",
   d: "د",
   D: "ډ",
   e: "ع",
-  E: "غ",
+  E: "ږ",
   f: "ف",
-  F: "ړ",
+  F: "",
   g: "ګ",
-  G: "ک",
+  G: "غ",
   h: "ح",
-  H: "خ",
+  H: "ځ",
   i: "ي",
   I: "ې",
   j: "ج",
-  J: "ځ",
+  J: "ض",
   k: "ک",
-  K: "ګ",
+  K: "خ",
   l: "ل",
-  L: "څ",
+  L: "",
   m: "م",
-  M: "پ",
+  M: "",
   n: "ن",
   N: "ڼ",
   o: "ه",
   O: "ۀ",
   p: "پ",
-  P: "ځ",
+  P: "څ",
   q: "ق",
   Q: "ښ",
   r: "ر",
@@ -53,6 +62,8 @@ const pashtoMap = {
   Z: "ذ",
   "?": "؟",
   ";": "؛",
+  ",": "،",
+  ".": "۔",
   0: "۰",
   1: "۱",
   2: "۲",
@@ -70,7 +81,7 @@ const qwertyLayout = [
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
   ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter"],
   ["Shift", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift"],
-  ["Space ؔؔؔ| فاصله"],
+  ["Space"],
 ];
 
 const shiftMap = {
@@ -123,7 +134,7 @@ const shiftMap = {
   ".": ">",
   "/": "?",
   Shift: "Shift",
-  Space: "Space ؔؔؔ| فاصله",
+  Space: "Space",
 };
 
 let isShiftActive = false;
@@ -139,6 +150,7 @@ function transliterate(input) {
 function createKeyboardOverlay() {
   const existingOverlay = document.getElementById("keyboard-overlay");
   if (existingOverlay) existingOverlay.remove();
+  if (!activeInput) return;
 
   const overlay = document.createElement("div");
   overlay.className = "keyboard-overlay";
@@ -209,7 +221,8 @@ function makeDraggable(dragHandle, element) {
     pos2 = 0,
     pos3 = 0,
     pos4 = 0;
-  dragHandle.onmousedown = dragMouseDown;
+  // dragHandle.onmousedown = dragMouseDown;
+  element.onmousedown = dragMouseDown;
 
   function dragMouseDown(e) {
     e = e || window.event;

@@ -159,6 +159,7 @@ body {
 }
 
 .input.full-width {
+  font-family: Arial, sans-serif;
   margin: 64px;
   /* width: 100%; */
   box-sizing: border-box;
@@ -186,6 +187,7 @@ body {
   flex-direction: column;
   align-items: center;
   cursor: move; /* Draggable cursor */
+  display: none; /* Start hidden by default */
 }
 
 .keyboard-toolbar {
@@ -274,4 +276,36 @@ body {
   border-radius: 4px;
   cursor: pointer;
   padding: 5px 10px;
+}
+
+.pashto-keyboard-controls {
+  position: absolute;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: -1px;
+  z-index: 1000;
+}
+
+.pashto-control-btn {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.pashto-control-btn:hover {
+  background: #f0f0f0;
+}
+
+.pashto-control-btn.active {
+  background: #e0e0e0;
+  border-color: #999;
 }

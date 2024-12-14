@@ -127,6 +127,8 @@ const shiftMap = {
 };
 
 let isShiftActive = false;
+let isKeyboardEnabled = true;
+let isKeybindingEnabled = true;
 let activeInput = null;
 
 function transliterate(input) {
@@ -139,6 +141,8 @@ function transliterate(input) {
 function createKeyboardOverlay() {
   const existingOverlay = document.getElementById("keyboard-overlay");
   if (existingOverlay) existingOverlay.remove();
+  if (!activeInput) 
+return;
 
   const overlay = document.createElement("div");
   overlay.className = "keyboard-overlay";
@@ -203,64 +207,127 @@ function updateKeyboardOverlay() {
 function handleButtonClick(key) {
   if (!activeInput) return;
 
+  const start = activeInput.selectionStart;
+  const end = activeInput.selectionEnd;
+  const hasSelection = start !== end;
+
   if (key === "Shift") {
     isShiftActive = !isShiftActive;
     updateKeyboardOverlay();
   } else if (key === "Space") {
-    const cursorPos = activeInput.selectionStart;
-    const before = activeInput.value.slice(0, cursorPos);
-    const after = activeInput.value.slice(cursorPos);
-    activeInput.value = `${before} ${after}`;
-    activeInput.focus();
-    activeInput.selectionStart = cursorPos + 1;
-    activeInput.selectionEnd = cursorPos + 1;
+    insertText(" ", hasSelection, start, end);
   } else {
     const actualKey = isShiftActive ? shiftMap[key] : key;
-    const cursorPos = activeInput.selectionStart;
-    const before = activeInput.value.slice(0, cursorPos);
-    const after = activeInput.value.slice(cursorPos);
-    activeInput.value = `${before}${pashtoMap[actualKey] || actualKey}${after}`;
-    activeInput.focus();
-    activeInput.selectionStart = cursorPos + 1;
-    activeInput.selectionEnd = cursorPos + 1;
+    const char = pashtoMap[actualKey] || actualKey;
+    insertText(char, hasSelection, start, end);
   }
 }
 
-function addKeyboardIcon(inputElement) {
-  const icon = document.createElement("img");
-  icon.src = chrome.runtime.getURL("icon.png");
-  icon.className = "keyboard-icon";
-  icon.addEventListener("click", () => {
-    activeInput = inputElement;
-    createKeyboardOverlay();
-  });
-  inputElement.parentNode.insertBefore(icon, inputElement.nextSibling);
+function insertText(text, hasSelection, start, end) {
+  const before = activeInput.value.slice(0, start);
+  const after = activeInput.value.slice(hasSelection ? end : start);
+  activeInput.value = `${before}${text}${after}`;
+  activeInput.focus();
+  const newPosition = start + text.length;
+  activeInput.selectionStart = newPosition;
+  activeInput.selectionEnd = newPosition;
 }
 
 function handleKeyPress(event) {
-  const inputElement = event.target;
-  if (
-    (inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA") &&
-    activeInput === inputElement
-  ) {
-    const key = event.key;
-    if (key === "Shift") {
-      isShiftActive = !isShiftActive;
-      updateKeyboardOverlay();
-    } else if (pashtoMap[key]) {
-      event.preventDefault();
-      const cursorPos = inputElement.selectionStart;
-      const before = inputElement.value.slice(0, cursorPos);
-      const after = inputElement.value.slice(cursorPos);
-      inputElement.value = `${before}${pashtoMap[key]}${after}`;
-      inputElement.focus();
-      inputElement.selectionStart = cursorPos + 1;
-      inputElement.selectionEnd = cursorPos + 1;
-    }
+  if (!isKeybindingEnabled) return;
+  
+  const key = event.key;
+  if (pashtoMap[key]) {
+    event.preventDefault();
+    const start = activeInput.selectionStart;
+    const end = activeInput.selectionEnd;
+    insertText(pashtoMap[key], start !== end, start, end);
   }
 }
 
-document
-  .querySelectorAll('input[type="text"], textarea')
-  .forEach(addKeyboardIcon);
-document.addEventListener("keypress", handleKeyPress);
+function createControlButtons(inputElement) {
+  const controlsWrapper = document.createElement('div');
+  controlsWrapper.className = 'pashto-keyboard-controls';
+  
+  const keyboardToggle = document.createElement('button');
+  keyboardToggle.className = 'pashto-control-btn keyboard-toggle';
+  keyboardToggle.innerHTML = '⌨️';
+  keyboardToggle.title = 'Toggle Virtual Keyboard';
+  keyboardToggle.addEventListener('click', () => {
+    isKeyboardEnabled = !isKeyboardEnabled;
+    keyboardToggle.classList.toggle('active', isKeyboardEnabled);
+    const overlay = document.getElementById('keyboard-overlay');
+    if (overlay) {
+      overlay.style.display = isKeyboardEnabled ? 'flex' : 'none';
+    } else if (isKeyboardEnabled) {
+      createKeyboardOverlay();
+    }
+  });
+
+  const keybindingToggle = document.createElement('button');
+  keybindingToggle.className = 'pashto-control-btn keybinding-toggle active';
+  keybindingToggle.innerHTML = '⚡';
+  keybindingToggle.title = 'Toggle Keybindings';
+  keybindingToggle.addEventListener('click', () => {
+    isKeybindingEnabled = !isKeybindingEnabled;
+    keybindingToggle.classList.toggle('active', isKeybindingEnabled);
+  });
+
+  const expandButton = document.createElement('button');
+  expandButton.className = 'pashto-control-btn expand';
+  expandButton.innerHTML = '⇱';
+  expandButton.title = 'Open in Large Editor';
+  expandButton.addEventListener('click', () => {
+    const text = inputElement.value || inputElement.textContent;
+    const editorUrl = chrome.runtime.getURL('newtab.html');
+    window.open(`${editorUrl}?text=${encodeURIComponent(text)}`, '_blank');
+  });
+
+  controlsWrapper.appendChild(keyboardToggle);
+  controlsWrapper.appendChild(keybindingToggle);
+  controlsWrapper.appendChild(expandButton);
+  
+  inputElement.parentNode.insertBefore(controlsWrapper, inputElement.nextSibling);
+}
+
+function addPashtoKeyboard(inputElement) {
+  createControlButtons(inputElement);
+  
+  inputElement.addEventListener('focus', () => {
+    activeInput = inputElement;
+  });
+  
+  inputElement.addEventListener('blur', () => {
+    if (activeInput === inputElement) {
+      activeInput = null;
+    }
+  });
+  
+  inputElement.addEventListener('keypress', handleKeyPress);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const inputs = document.querySelectorAll(
+    'input[type="text"], textarea, div[role="textbox"], div[contenteditable="true"]'
+  );
+  inputs.forEach(addPashtoKeyboard);
+  
+  // Monitor for dynamically added input fields
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === 1) { // Element node
+          const inputs = node.querySelectorAll(
+            'input[type="text"], textarea, div[role="textbox"], div[contenteditable="true"]'
+          );
+          inputs.forEach(addPashtoKeyboard);
+        }
+      });
+    });
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+});
