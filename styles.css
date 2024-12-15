@@ -30,7 +30,6 @@ body {
 
 .keyboard-overlay {
   position: fixed;
-  bottom: 10%;
   left: 50%;
   transform: translateX(-50%);
   background: #000000ee;
@@ -44,6 +43,7 @@ body {
   min-width: 750px;
   max-width: 90%;
   overflow: hidden;
+  padding-bottom: 20px; 
 }
 
 .keyboard-overlay.visible {

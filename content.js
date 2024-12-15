@@ -194,7 +194,7 @@ function createKeyboardOverlay() {
   });
 
   document.body.appendChild(overlay);
-  makeDraggable(overlay, overlay);
+  makeDraggable(overlay);
 
   // Initialize position
   const rect = overlay.getBoundingClientRect();
@@ -374,53 +374,47 @@ function handleKeyboardInput(event) {
   }
 }
 
-function makeDraggable(dragHandle, element) {
-  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  let isDragging = false;
+  function makeDraggable(element) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    let isDragging = false;
+    
+    element.addEventListener('mousedown', dragMouseDown);
   
-  element.addEventListener('mousedown', dragMouseDown);
-
-  function dragMouseDown(e) {
-    if (e.target.tagName.toLowerCase() === 'button') return;
-    
-    e.preventDefault();
-    isDragging = true;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    
-    if (!element.style.top) {
-      const rect = element.getBoundingClientRect();
-      element.style.top = `${rect.top}px`;
-      element.style.left = `${rect.left}px`;
-      element.style.transform = 'none';
-      element.style.bottom = 'auto';
+    function dragMouseDown(e) {
+      if (e.target.tagName.toLowerCase() === 'button') return;
+      
+      e.preventDefault();
+      isDragging = true;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      
+      document.addEventListener('mousemove', elementDrag);
+      document.addEventListener('mouseup', closeDragElement);
     }
-    
-    document.addEventListener('mousemove', elementDrag);
-    document.addEventListener('mouseup', closeDragElement);
-    element.classList.add('dragging');
+  
+    function elementDrag(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      
+      const newTop = element.offsetTop - pos2;
+      const newLeft = element.offsetLeft - pos1;
+      
+      // Ensure the keyboard stays within the viewport
+      element.style.top = `${Math.max(0, Math.min(window.innerHeight - element.offsetHeight, newTop))}px`;
+      element.style.left = `${Math.max(0, Math.min(window.innerWidth - element.offsetWidth, newLeft))}px`;
+    }
+  
+    function closeDragElement() {
+      isDragging = false;
+      document.removeEventListener('mousemove', elementDrag);
+      document.removeEventListener('mouseup', closeDragElement);
+    }
   }
-
-  function elementDrag(e) {
-    if (!isDragging) return;
-    e.preventDefault();
-    
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    
-    element.style.top = `${element.offsetTop - pos2}px`;
-    element.style.left = `${element.offsetLeft - pos1}px`;
-  }
-
-  function closeDragElement() {
-    isDragging = false;
-    document.removeEventListener('mousemove', elementDrag);
-    document.removeEventListener('mouseup', closeDragElement);
-    element.classList.remove('dragging');
-  }
-}
 
 function toggleKeyboard() {
   isKeyboardEnabled = !isKeyboardEnabled;
