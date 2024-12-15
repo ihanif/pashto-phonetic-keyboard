@@ -5,14 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pashto Phonetic Keyboard | پښتو فونیټیک کیبورډ</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="lib.js"></script>
   </head>
   <body>
-    <textarea
-      id="popup-input"
-      class="input full-width"
-      rows="10"
-      dir="rtl"
-    ></textarea>
-    <script src="lib.js"></script>
+    <div id="keyboard-container">
+      <div id="keyboard-overlay"></div>
+      <div id="keyboard-controls"></div>
+      <div id="keyboard-input">
+        <textarea
+        id="popup-input"
+        class="input full-width"
+        rows="10"
+        dir="rtl"
+      ></textarea>
+      </div>
+    </div>
+    </div>
   </body>
 </html>
