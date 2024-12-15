@@ -128,7 +128,7 @@ const shiftMap = {
 
 let isShiftActive = false;
 let isKeyboardEnabled = false;
-let isKeybindingEnabled = true;
+let isKeybindingEnabled = false;
 let activeInput = null;
 
 function transliterate(input) {
@@ -296,25 +296,90 @@ function createControlButtons(inputElement) {
   controlsWrapper.className = 'pashto-keyboard-controls';
   
   const phoneticToggle = document.createElement('button');
-  phoneticToggle.className = 'pashto-control-btn phonetic-toggle active';
+  phoneticToggle.className = 'pashto-control-btn phonetic-toggle';
   phoneticToggle.innerHTML = '⚡';
-  phoneticToggle.title = 'Toggle Phonetic Keyboard';
+  phoneticToggle.title = 'Enable/Disable Pashto Keybinding';
   phoneticToggle.addEventListener('click', () => {
     isKeybindingEnabled = !isKeybindingEnabled;
     phoneticToggle.classList.toggle('active', isKeybindingEnabled);
+    toggleKeyboardButton(controlsWrapper, isKeybindingEnabled);
   });
 
-  const keyboardToggle = document.createElement('button');
-  keyboardToggle.className = 'pashto-control-btn keyboard-toggle';
-  keyboardToggle.innerHTML = '⌨️';
-  keyboardToggle.title = 'Show/Hide Virtual Keyboard';
-  keyboardToggle.addEventListener('click', toggleKeyboard);
-
   controlsWrapper.appendChild(phoneticToggle);
-  controlsWrapper.appendChild(keyboardToggle);
-  
   inputElement.parentNode.insertBefore(controlsWrapper, inputElement.nextSibling);
 }
+
+function toggleKeyboardButton(wrapper, isEnabled) {
+  let keyboardToggle = wrapper.querySelector('.keyboard-toggle');
+  
+  if (isEnabled) {
+    if (!keyboardToggle) {
+      keyboardToggle = document.createElement('button');
+      keyboardToggle.className = 'pashto-control-btn keyboard-toggle';
+      keyboardToggle.innerHTML = '⌨️';
+      keyboardToggle.title = 'Show/Hide Virtual Keyboard';
+      keyboardToggle.addEventListener('click', toggleKeyboard);
+      wrapper.appendChild(keyboardToggle);
+    }
+  } else {
+    if (keyboardToggle) {
+      keyboardToggle.remove();
+    }
+  }
+}
+
+function toggleKeyboard() {
+  isKeyboardEnabled = !isKeyboardEnabled;
+  const keyboardToggle = document.querySelector('.keyboard-toggle');
+  if (keyboardToggle) {
+    keyboardToggle.classList.toggle('active', isKeyboardEnabled);
+  }
+  
+  if (isKeyboardEnabled) {
+    createKeyboardOverlay();
+  } else {
+    const overlay = document.getElementById('keyboard-overlay');
+    if (overlay) {
+      overlay.classList.remove('visible');
+    }
+  }
+}
+
+document.addEventListener("keydown", (event) => {
+  if (!activeInput || !isKeybindingEnabled) return;
+
+  switch (event.key) {
+    case "Shift":
+      isShiftActive = !isShiftActive;
+      updateKeyboardOverlay();
+      break;
+    case "Caps":
+      // Handle Caps toggle
+      break;
+    case "Enter":
+      event.preventDefault();
+      insertText("\n", false, activeInput.selectionStart, activeInput.selectionEnd);
+      break;
+    case "Tab":
+      event.preventDefault();
+      insertText("\t", false, activeInput.selectionStart, activeInput.selectionEnd);
+      break;
+    case "Delete":
+      event.preventDefault();
+      handleButtonClick("Delete");
+      break;
+    case "Alt":
+    case "Ctrl":
+    case "Cmd":
+      event.preventDefault();
+      break;
+    default:
+      if (pashtoMap[event.key]) {
+        event.preventDefault();
+        insertText(pashtoMap[event.key], false, activeInput.selectionStart, activeInput.selectionEnd);
+      }
+  }
+});
 
 function addPashtoKeyboard(inputElement) {
   if (inputElement.dataset.hasPashtoKeyboard) return;
@@ -415,62 +480,3 @@ function handleKeyboardInput(event) {
       document.removeEventListener('mouseup', closeDragElement);
     }
   }
-
-function toggleKeyboard() {
-  isKeyboardEnabled = !isKeyboardEnabled;
-  const keyboardToggle = document.querySelector('.keyboard-toggle');
-  if (keyboardToggle) {
-    keyboardToggle.classList.toggle('active', isKeyboardEnabled);
-  }
-  
-  if (isKeyboardEnabled) {
-    createKeyboardOverlay();
-  } else {
-    const overlay = document.getElementById('keyboard-overlay');
-    if (overlay) {
-      overlay.classList.remove('visible');
-    }
-  }
-}
-
-document.addEventListener("keydown", (event) => {
-  if (!activeInput || !isKeybindingEnabled) return;
-
-  switch (event.key) {
-    case "Shift":
-      isShiftActive = !isShiftActive;
-      updateKeyboardOverlay();
-      break;
-    case "Caps":
-      // Handle Caps toggle
-      break;
-    case "Enter":
-      event.preventDefault();
-      insertText("\n", false, activeInput.selectionStart, activeInput.selectionEnd);
-      break;
-    case "Tab":
-      event.preventDefault();
-      insertText("\t", false, activeInput.selectionStart, activeInput.selectionEnd);
-      break;
-    case "Delete":
-      event.preventDefault();
-      handleButtonClick("Delete");
-      break;
-    case "Alt":
-      event.preventDefault();
-      break;
-    case "Ctrl":
-      event.preventDefault();
-      break;
-    case "Cmd":
-      event.preventDefault();
-      break;
-      // Handle functional keys if needed
-      break;
-    default:
-      if (pashtoMap[event.key]) {
-        event.preventDefault();
-        insertText(pashtoMap[event.key], false, activeInput.selectionStart, activeInput.selectionEnd);
-      }
-  }
-});
