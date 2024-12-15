@@ -434,7 +434,7 @@ function toggleKeyboard() {
 }
 
 document.addEventListener("keydown", (event) => {
-  if (!activeInput) return;
+  if (!activeInput || !isKeybindingEnabled) return;
 
   switch (event.key) {
     case "Shift":
@@ -455,6 +455,17 @@ document.addEventListener("keydown", (event) => {
     case "Delete":
       event.preventDefault();
       handleButtonClick("Delete");
+      break;
+    case "Alt":
+      event.preventDefault();
+      break;
+    case "Ctrl":
+      event.preventDefault();
+      break;
+    case "Cmd":
+      event.preventDefault();
+      break;
+      // Handle functional keys if needed
       break;
     default:
       if (pashtoMap[event.key]) {
