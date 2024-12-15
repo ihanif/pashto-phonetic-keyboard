@@ -100,9 +100,9 @@ body {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 6px;
   color: white;
   position: relative;
 }
@@ -114,15 +114,15 @@ body {
 .keyboard-button .english {
   font-size: 12px;
   color: #999;
-  position: absolute;
-  top: 4px;
-  left: 4px;
+  position: static;
+  align-self: flex-start;
 }
 
 .keyboard-button .pashto {
   font-size: 18px;
   color: white;
   font-weight: normal;
+  align-self: flex-end;
 }
 
 .keyboard-button.keyboard-space {

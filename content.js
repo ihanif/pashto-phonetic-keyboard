@@ -66,93 +66,11 @@ const pashtoMap = {
 };
 
 const qwertyLayout = [
-  [
-    { key: "esc", type: "function" },
-    { key: "🔆", type: "function" },
-    { key: "🔅", type: "function" },
-    { key: "⧉", type: "function" },
-    { key: "🔍", type: "function" },
-    { key: "🎤", type: "function" },
-    { key: "🌙", type: "function" },
-    { key: "⏮", type: "function" },
-    { key: "⏯", type: "function" },
-    { key: "⏭", type: "function" },
-    { key: "🔇", type: "function" },
-    { key: "🔉", type: "function" },
-    { key: "🔊", type: "function" },
-    { key: "☰", type: "function" },
-  ],
-  [
-    { key: "`", text: "÷" },
-    { key: "1", text: "١" },
-    { key: "2", text: "٢" },
-    { key: "3", text: "٣" },
-    { key: "4", text: "٤" },
-    { key: "5", text: "٥" },
-    { key: "6", text: "٦" },
-    { key: "7", text: "٧" },
-    { key: "8", text: "٨" },
-    { key: "9", text: "٩" },
-    { key: "0", text: "٠" },
-    { key: "-", text: "-" },
-    { key: "=", text: "=" },
-    { key: "⌫", type: "backspace" },
-  ],
-  [
-    { key: "Tab", type: "tab" },
-    { key: "q", text: "ق" },
-    { key: "w", text: "و" },
-    { key: "e", text: "ع" },
-    { key: "r", text: "ر" },
-    { key: "t", text: "ت" },
-    { key: "y", text: "ی" },
-    { key: "u", text: "ئ" },
-    { key: "i", text: "ي" },
-    { key: "o", text: "ه" },
-    { key: "p", text: "پ" },
-    { key: "[", text: "{" },
-    { key: "]", text: "}" },
-  ],
-  [
-    { key: "CapsLock", type: "capslock" },
-    { key: "a", text: "ا" },
-    { key: "s", text: "س" },
-    { key: "d", text: "د" },
-    { key: "f", text: "ف" },
-    { key: "g", text: "گ" },
-    { key: "h", text: "ح" },
-    { key: "j", text: "ج" },
-    { key: "k", text: "ک" },
-    { key: "l", text: "ل" },
-    { key: ";", text: ":" },
-    { key: "'", text: '"' },
-    { key: "\\", text: '\\' },
-    { key: "Enter", type: "enter" },
-  ],
-  [
-    { key: "Shift", type: "shift" },
-    {key: "`", type:"`"},
-    { key: "z", text: "ز" },
-    { key: "x", text: "س" },
-    { key: "c", text: "چ" },
-    { key: "v", text: "ژ" },
-    { key: "b", text: "ب" },
-    { key: "n", text: "ن" },
-    { key: "m", text: "م" },
-    { key: ",", text: "<" },
-    { key: ".", text: ">" },
-    { key: "/", text: "؟" },
-  ],
-  [
-    { key: "fn", type: "function" },
-    { key: "Ctrl", type: "function" },
-    { key: "Alt", type: "function" },
-    { key: "Cmd", type: "function" },
-    { key: "Space", type: "space" },
-    { key: "Cmd", type: "function" },
-    { key: "Alt", type: "function" },
-
-  ],
+  ["=", "-", "0", "9", "8", "7", "6", "5", "4", "3", "2", "1", "`"],
+  ["\\", "]", "[", "p", "o", "i", "u", "y", "t", "r", "e", "w", "q"],
+  ["Enter", "'", ";", "l", "k", "j", "h", "g", "f", "d", "s", "a"],
+  ["Shift", "/", ".", ",", "m", "n", "b", "v", "c", "x", "z", "Shift"],
+  ["Space"],
 ];
 
 const shiftMap = {
@@ -209,7 +127,7 @@ const shiftMap = {
 };
 
 let isShiftActive = false;
-let isKeyboardEnabled = true;
+let isKeyboardEnabled = false;
 let isKeybindingEnabled = true;
 let activeInput = null;
 
@@ -221,16 +139,17 @@ function transliterate(input) {
 }
 
 function createKeyboardOverlay() {
-  const existingOverlay = document.getElementById("keyboard-overlay");
-  if (existingOverlay) {
-    existingOverlay.classList.add('visible');
+  let overlay = document.getElementById("keyboard-overlay");
+  
+  if (overlay) {
+    overlay.classList.toggle('visible');
     return;
   }
 
-  const overlay = document.createElement("div");
+  overlay = document.createElement("div");
   overlay.className = "keyboard-overlay visible";
   overlay.id = "keyboard-overlay";
-
+  
   const toolbar = document.createElement("div");
   toolbar.className = "keyboard-toolbar";
   
@@ -255,20 +174,19 @@ function createKeyboardOverlay() {
     const rowDiv = document.createElement("div");
     rowDiv.className = "keyboard-row";
 
-    row.forEach(keyObj => {
+    row.forEach(key => {
       const button = document.createElement("button");
-      const keyName = typeof keyObj === 'string' ? keyObj : keyObj.key;
-      button.className = `keyboard-button ${keyName === "Space" ? "keyboard-space" : ""}`;
+      button.className = `keyboard-button ${key === "Space" ? "keyboard-space" : ""}`;
       
-      const displayKey = isShiftActive && shiftMap[keyName] ? shiftMap[keyName] : keyName;
-      const displayPashto = pashtoMap[displayKey] || (keyObj.text || "");
+      const displayKey = isShiftActive ? (shiftMap[key] || key) : key;
+      const displayPashto = pashtoMap[displayKey] || "";
       
       button.innerHTML = `
         <span class="english">${displayKey}</span>
         <span class="pashto">${displayPashto}</span>
       `;
       
-      button.addEventListener("click", () => handleButtonClick(keyName));
+      button.addEventListener("click", () => handleButtonClick(key));
       rowDiv.appendChild(button);
     });
 
@@ -276,27 +194,37 @@ function createKeyboardOverlay() {
   });
 
   document.body.appendChild(overlay);
-  makeDraggable(toolbar, overlay);
+  makeDraggable(overlay, overlay);
+
+  // Initialize position
+  const rect = overlay.getBoundingClientRect();
+  overlay.style.top = `${window.innerHeight - rect.height - 50}px`;
+  overlay.style.left = `${(window.innerWidth - rect.width) / 2}px`;
+  overlay.style.transform = 'none';
 }
 
 function updateKeyboardOverlay() {
   const overlay = document.getElementById("keyboard-overlay");
-  overlay
-    .querySelectorAll(".keyboard-row")
-    .forEach((rowDiv) => rowDiv.remove());
+  if (!overlay) return;
+  
+  overlay.querySelectorAll(".keyboard-row").forEach(rowDiv => rowDiv.remove());
 
-  qwertyLayout.forEach((row) => {
+  qwertyLayout.forEach(row => {
     const rowDiv = document.createElement("div");
     rowDiv.className = "keyboard-row";
 
-    row.forEach((key) => {
+    row.forEach(key => {
       const button = document.createElement("button");
-      button.className = `keyboard-button ${
-        key === "Space" ? "keyboard-space" : ""
-      }`;
-      const displayKey = isShiftActive && shiftMap[key] ? shiftMap[key] : key;
+      button.className = `keyboard-button ${key === "Space" ? "keyboard-space" : ""}`;
+      
+      const displayKey = isShiftActive ? (shiftMap[key] || key) : key;
       const displayPashto = pashtoMap[displayKey] || "";
-      button.innerHTML = `<span class="english">${displayKey}</span><span class="pashto">${displayPashto}</span>`;
+      
+      button.innerHTML = `
+        <span class="english">${displayKey}</span>
+        <span class="pashto">${displayPashto}</span>
+      `;
+      
       button.addEventListener("click", () => handleButtonClick(key));
       rowDiv.appendChild(button);
     });
@@ -318,7 +246,7 @@ function handleButtonClick(key) {
   } else if (key === "Space") {
     insertText(" ", hasSelection, start, end);
   } else {
-    const actualKey = isShiftActive ? shiftMap[key] : key;
+    const actualKey = isShiftActive ? shiftMap[key] || key : key;
     const char = pashtoMap[actualKey] || actualKey;
     insertText(char, hasSelection, start, end);
   }
@@ -365,17 +293,7 @@ function createControlButtons(inputElement) {
   keyboardToggle.className = 'pashto-control-btn keyboard-toggle';
   keyboardToggle.innerHTML = '⌨️';
   keyboardToggle.title = 'Show/Hide Virtual Keyboard';
-  keyboardToggle.addEventListener('click', () => {
-    isKeyboardEnabled = !isKeyboardEnabled;
-    keyboardToggle.classList.toggle('active', isKeyboardEnabled);
-    
-    let overlay = document.getElementById('keyboard-overlay');
-    if (!overlay && isKeyboardEnabled) {
-      createKeyboardOverlay();
-    } else if (overlay) {
-      overlay.classList.toggle('visible', isKeyboardEnabled);
-    }
-  });
+  keyboardToggle.addEventListener('click', toggleKeyboard);
 
   controlsWrapper.appendChild(phoneticToggle);
   controlsWrapper.appendChild(keyboardToggle);
@@ -405,18 +323,15 @@ function addPashtoKeyboard(inputElement) {
 
 function initializePashtoKeyboard() {
   const inputs = document.querySelectorAll(
-    'input[type="text"], textarea, [contenteditable="true"]'
+    'textarea'
   );
   inputs.forEach(addPashtoKeyboard);
   
-  // Monitor for dynamically added input fields
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === 1) {
-          const inputs = node.querySelectorAll(
-            'input[type="text"], textarea, [contenteditable="true"]'
-          );
+          const inputs = node.querySelectorAll('textarea');
           inputs.forEach(addPashtoKeyboard);
         }
       });
@@ -429,11 +344,9 @@ function initializePashtoKeyboard() {
   });
 }
 
-// Initialize immediately and also on DOMContentLoaded
 initializePashtoKeyboard();
 document.addEventListener('DOMContentLoaded', initializePashtoKeyboard);
 
-// Add this function to handle keyboard input
 function handleKeyboardInput(event) {
   if (!isKeybindingEnabled || !activeInput) return;
   
@@ -448,34 +361,65 @@ function handleKeyboardInput(event) {
 
 function makeDraggable(dragHandle, element) {
   let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  let isDragging = false;
   
-  dragHandle.style.cursor = 'move';
-  dragHandle.addEventListener('mousedown', dragMouseDown);
+  element.addEventListener('mousedown', dragMouseDown);
 
   function dragMouseDown(e) {
+    if (e.target.tagName.toLowerCase() === 'button') return;
+    
     e.preventDefault();
+    isDragging = true;
     pos3 = e.clientX;
     pos4 = e.clientY;
-    document.addEventListener('mouseup', closeDragElement);
+    
+    if (!element.style.top) {
+      const rect = element.getBoundingClientRect();
+      element.style.top = `${rect.top}px`;
+      element.style.left = `${rect.left}px`;
+      element.style.transform = 'none';
+      element.style.bottom = 'auto';
+    }
+    
     document.addEventListener('mousemove', elementDrag);
+    document.addEventListener('mouseup', closeDragElement);
+    element.classList.add('dragging');
   }
 
   function elementDrag(e) {
+    if (!isDragging) return;
     e.preventDefault();
+    
     pos1 = pos3 - e.clientX;
     pos2 = pos4 - e.clientY;
     pos3 = e.clientX;
     pos4 = e.clientY;
     
-    const newTop = element.offsetTop - pos2;
-    const newLeft = element.offsetLeft - pos1;
-    
-    element.style.top = `${newTop}px`;
-    element.style.left = `${newLeft}px`;
+    element.style.top = `${element.offsetTop - pos2}px`;
+    element.style.left = `${element.offsetLeft - pos1}px`;
   }
 
   function closeDragElement() {
-    document.removeEventListener('mouseup', closeDragElement);
+    isDragging = false;
     document.removeEventListener('mousemove', elementDrag);
+    document.removeEventListener('mouseup', closeDragElement);
+    element.classList.remove('dragging');
+  }
+}
+
+function toggleKeyboard() {
+  isKeyboardEnabled = !isKeyboardEnabled;
+  const keyboardToggle = document.querySelector('.keyboard-toggle');
+  if (keyboardToggle) {
+    keyboardToggle.classList.toggle('active', isKeyboardEnabled);
+  }
+  
+  if (isKeyboardEnabled) {
+    createKeyboardOverlay();
+  } else {
+    const overlay = document.getElementById('keyboard-overlay');
+    if (overlay) {
+      overlay.classList.remove('visible');
+    }
   }
 }

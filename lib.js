@@ -213,7 +213,7 @@ function createKeyboardOverlay() {
 
   document.body.appendChild(overlay);
   //makeDraggable(overlay);
-  makeDraggable(toolbar, overlay);
+  makeDraggable(overlay, overlay);
 }
 
 function makeDraggable(dragHandle, element) {
