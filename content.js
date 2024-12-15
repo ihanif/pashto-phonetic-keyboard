@@ -2,35 +2,35 @@ const pashtoMap = {
   a: "ا",
   A: "آ",
   b: "ب",
-  B: "پ",
+  B: "",
   c: "چ",
-  C: "ځ",
+  C: "ث",
   d: "د",
   D: "ډ",
   e: "ع",
-  E: "غ",
+  E: "ږ",
   f: "ف",
-  F: "ړ",
+  F: "",
   g: "ګ",
-  G: "ک",
+  G: "غ",
   h: "ح",
-  H: "خ",
+  H: "ځ",
   i: "ي",
   I: "ې",
   j: "ج",
-  J: "ځ",
+  J: "ض",
   k: "ک",
-  K: "ګ",
+  K: "خ",
   l: "ل",
-  L: "څ",
+  L: "",
   m: "م",
-  M: "پ",
+  M: "",
   n: "ن",
   N: "ڼ",
   o: "ه",
   O: "ۀ",
   p: "پ",
-  P: "ځ",
+  P: "څ",
   q: "ق",
   Q: "ښ",
   r: "ر",
@@ -53,6 +53,8 @@ const pashtoMap = {
   Z: "ذ",
   "?": "؟",
   ";": "؛",
+  ",": "،",
+  ".": "۔",
   0: "۰",
   1: "۱",
   2: "۲",
@@ -268,13 +270,22 @@ function handleButtonClick(key) {
 }
 
 function insertText(text, hasSelection, start, end) {
-  const before = activeInput.value.slice(0, start);
-  const after = activeInput.value.slice(hasSelection ? end : start);
-  activeInput.value = `${before}${text}${after}`;
-  activeInput.focus();
-  const newPosition = start + text.length;
-  activeInput.selectionStart = newPosition;
-  activeInput.selectionEnd = newPosition;
+  if (activeInput.isContentEditable) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(document.createTextNode(text));
+    range.collapse(false);
+  } else {
+    const before = activeInput.value.slice(0, start);
+    const after = activeInput.value.slice(hasSelection ? end : start);
+    activeInput.value = `${before}${text}${after}`;
+    activeInput.focus();
+    const newPosition = start + text.length;
+    activeInput.selectionStart = newPosition;
+    activeInput.selectionEnd = newPosition;
+  }
 }
 
 function handleKeyPress(event) {
@@ -290,15 +301,13 @@ function handleKeyPress(event) {
 }
 
 function createControlButtons(inputElement) {
-  if (inputElement.tagName.toLowerCase() !== 'textarea') return;
-  
   const controlsWrapper = document.createElement('div');
   controlsWrapper.className = 'pashto-keyboard-controls';
   
   const phoneticToggle = document.createElement('button');
   phoneticToggle.className = 'pashto-control-btn phonetic-toggle';
-  phoneticToggle.innerHTML = '⚡';
-  phoneticToggle.title = 'Enable/Disable Pashto Keybinding';
+  phoneticToggle.innerHTML = "پښتو ⚡";
+  phoneticToggle.title = 'Enable/Disable Pashto Phonetic Keyboard';
   phoneticToggle.addEventListener('click', () => {
     isKeybindingEnabled = !isKeybindingEnabled;
     phoneticToggle.classList.toggle('active', isKeybindingEnabled);
@@ -403,7 +412,7 @@ function addPashtoKeyboard(inputElement) {
 
 function initializePashtoKeyboard() {
   const inputs = document.querySelectorAll(
-    'textarea'
+    'textarea, [contenteditable="true"]'
   );
   inputs.forEach(addPashtoKeyboard);
   
@@ -411,7 +420,7 @@ function initializePashtoKeyboard() {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === 1) {
-          const inputs = node.querySelectorAll('textarea');
+          const inputs = node.querySelectorAll('textarea, [contenteditable="true"]');
           inputs.forEach(addPashtoKeyboard);
         }
       });
@@ -439,44 +448,43 @@ function handleKeyboardInput(event) {
   }
 }
 
-  function makeDraggable(element) {
-    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    let isDragging = false;
+function makeDraggable(element) {
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  let isDragging = false;
+  
+  element.addEventListener('mousedown', dragMouseDown);
+
+  function dragMouseDown(e) {
+    if (e.target.tagName.toLowerCase() === 'button') return;
     
-    element.addEventListener('mousedown', dragMouseDown);
-  
-    function dragMouseDown(e) {
-      if (e.target.tagName.toLowerCase() === 'button') return;
-      
-      e.preventDefault();
-      isDragging = true;
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      
-      document.addEventListener('mousemove', elementDrag);
-      document.addEventListener('mouseup', closeDragElement);
-    }
-  
-    function elementDrag(e) {
-      if (!isDragging) return;
-      e.preventDefault();
-      
-      pos1 = pos3 - e.clientX;
-      pos2 = pos4 - e.clientY;
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      
-      const newTop = element.offsetTop - pos2;
-      const newLeft = element.offsetLeft - pos1;
-      
-      // Ensure the keyboard stays within the viewport
-      element.style.top = `${Math.max(0, Math.min(window.innerHeight - element.offsetHeight, newTop))}px`;
-      element.style.left = `${Math.max(0, Math.min(window.innerWidth - element.offsetWidth, newLeft))}px`;
-    }
-  
-    function closeDragElement() {
-      isDragging = false;
-      document.removeEventListener('mousemove', elementDrag);
-      document.removeEventListener('mouseup', closeDragElement);
-    }
+    e.preventDefault();
+    isDragging = true;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    
+    document.addEventListener('mousemove', elementDrag);
+    document.addEventListener('mouseup', closeDragElement);
   }
+
+  function elementDrag(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    
+    const newTop = element.offsetTop - pos2;
+    const newLeft = element.offsetLeft - pos1;
+    
+    element.style.top = `${Math.max(0, Math.min(window.innerHeight - element.offsetHeight, newTop))}px`;
+    element.style.left = `${Math.max(0, Math.min(window.innerWidth - element.offsetWidth, newLeft))}px`;
+  }
+
+  function closeDragElement() {
+    isDragging = false;
+    document.removeEventListener('mousemove', elementDrag);
+    document.removeEventListener('mouseup', closeDragElement);
+  }
+}
