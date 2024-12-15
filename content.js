@@ -66,11 +66,11 @@ const pashtoMap = {
 };
 
 const qwertyLayout = [
-  ["=", "-", "0", "9", "8", "7", "6", "5", "4", "3", "2", "1", "`"],
-  ["\\", "]", "[", "p", "o", "i", "u", "y", "t", "r", "e", "w", "q"],
-  ["Enter", "'", ";", "l", "k", "j", "h", "g", "f", "d", "s", "a"],
+  ["Backspace","=", "-", "0", "9", "8", "7", "6", "5", "4", "3", "2", "1", "`", "§"],
+  ["\\", "]", "[", "p", "o", "i", "u", "y", "t", "r", "e", "w", "q", "Tab"],
+  ["Enter", "'", ";", "l", "k", "j", "h", "g", "f", "d", "s", "a", "CapsLock"],
   ["Shift", "/", ".", ",", "m", "n", "b", "v", "c", "x", "z", "Shift"],
-  ["Space"],
+  ["Ctrl", "Alt", "Cmd", "Space", "Cmd", "Alt", "Ctrl"],
 ];
 
 const shiftMap = {
@@ -155,7 +155,7 @@ function createKeyboardOverlay() {
   
   const title = document.createElement("span");
   title.className = "keyboard-title";
-  title.textContent = "Pashto Keyboard";
+  title.textContent = "پښتو فونیټیک کیبورډ";
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "keyboard-close";
@@ -240,15 +240,30 @@ function handleButtonClick(key) {
   const end = activeInput.selectionEnd;
   const hasSelection = start !== end;
 
-  if (key === "Shift") {
-    isShiftActive = !isShiftActive;
-    updateKeyboardOverlay();
-  } else if (key === "Space") {
-    insertText(" ", hasSelection, start, end);
-  } else {
-    const actualKey = isShiftActive ? shiftMap[key] || key : key;
-    const char = pashtoMap[actualKey] || actualKey;
-    insertText(char, hasSelection, start, end);
+  switch (key) {
+    case "Shift":
+      isShiftActive = !isShiftActive;
+      updateKeyboardOverlay();
+      break;
+    case "CapsLock":
+      // Toggle CapsLock state
+      break;
+    case "Enter":
+      insertText("\n", hasSelection, start, end);
+      break;
+    case "Tab":
+      insertText("\t", hasSelection, start, end);
+      break;
+    case "Backspace":
+      if (start > 0) {
+        activeInput.value = activeInput.value.slice(0, start - 1) + activeInput.value.slice(end);
+        activeInput.selectionStart = activeInput.selectionEnd = start - 1;
+      }
+      break;
+    default:
+      const actualKey = isShiftActive ? shiftMap[key] || key : key;
+      const char = pashtoMap[actualKey] || actualKey;
+      insertText(char, hasSelection, start, end);
   }
 }
 
@@ -423,3 +438,34 @@ function toggleKeyboard() {
     }
   }
 }
+
+document.addEventListener("keydown", (event) => {
+  if (!activeInput) return;
+
+  switch (event.key) {
+    case "Shift":
+      isShiftActive = !isShiftActive;
+      updateKeyboardOverlay();
+      break;
+    case "CapsLock":
+      // Handle CapsLock toggle
+      break;
+    case "Enter":
+      event.preventDefault();
+      insertText("\n", false, activeInput.selectionStart, activeInput.selectionEnd);
+      break;
+    case "Tab":
+      event.preventDefault();
+      insertText("\t", false, activeInput.selectionStart, activeInput.selectionEnd);
+      break;
+    case "Backspace":
+      event.preventDefault();
+      handleButtonClick("Backspace");
+      break;
+    default:
+      if (pashtoMap[event.key]) {
+        event.preventDefault();
+        insertText(pashtoMap[event.key], false, activeInput.selectionStart, activeInput.selectionEnd);
+      }
+  }
+});
