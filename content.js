@@ -66,9 +66,9 @@ const pashtoMap = {
 };
 
 const qwertyLayout = [
-  ["Backspace","=", "-", "0", "9", "8", "7", "6", "5", "4", "3", "2", "1", "`", "§"],
+  ["Delete","=", "-", "0", "9", "8", "7", "6", "5", "4", "3", "2", "1", "`", "§"],
   ["\\", "]", "[", "p", "o", "i", "u", "y", "t", "r", "e", "w", "q", "Tab"],
-  ["Enter", "'", ";", "l", "k", "j", "h", "g", "f", "d", "s", "a", "CapsLock"],
+  ["Enter", "'", ";", "l", "k", "j", "h", "g", "f", "d", "s", "a", "Caps"],
   ["Shift", "/", ".", ",", "m", "n", "b", "v", "c", "x", "z", "Shift"],
   ["Ctrl", "Alt", "Cmd", "Space", "Cmd", "Alt", "Ctrl"],
 ];
@@ -245,8 +245,8 @@ function handleButtonClick(key) {
       isShiftActive = !isShiftActive;
       updateKeyboardOverlay();
       break;
-    case "CapsLock":
-      // Toggle CapsLock state
+    case "Caps":
+      // Toggle Caps state
       break;
     case "Enter":
       insertText("\n", hasSelection, start, end);
@@ -254,7 +254,7 @@ function handleButtonClick(key) {
     case "Tab":
       insertText("\t", hasSelection, start, end);
       break;
-    case "Backspace":
+    case "Delete":
       if (start > 0) {
         activeInput.value = activeInput.value.slice(0, start - 1) + activeInput.value.slice(end);
         activeInput.selectionStart = activeInput.selectionEnd = start - 1;
@@ -447,8 +447,8 @@ document.addEventListener("keydown", (event) => {
       isShiftActive = !isShiftActive;
       updateKeyboardOverlay();
       break;
-    case "CapsLock":
-      // Handle CapsLock toggle
+    case "Caps":
+      // Handle Caps toggle
       break;
     case "Enter":
       event.preventDefault();
@@ -458,9 +458,9 @@ document.addEventListener("keydown", (event) => {
       event.preventDefault();
       insertText("\t", false, activeInput.selectionStart, activeInput.selectionEnd);
       break;
-    case "Backspace":
+    case "Delete":
       event.preventDefault();
-      handleButtonClick("Backspace");
+      handleButtonClick("Delete");
       break;
     default:
       if (pashtoMap[event.key]) {

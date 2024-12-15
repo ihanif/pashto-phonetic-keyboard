@@ -42,6 +42,8 @@ body {
   display: none;
   color: white;
   min-width: 750px;
+  max-width: 90%;
+  overflow: hidden;
 }
 
 .keyboard-overlay.visible {
@@ -86,12 +88,14 @@ body {
 
 .keyboard-row {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   gap: 6px;
   margin-bottom: 6px;
+  flex-wrap: wrap;
 }
 
 .keyboard-button {
+  flex: 1;
   min-width: 40px;
   height: 40px;
   background: #333333;
@@ -100,8 +104,8 @@ body {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
   padding: 6px;
   color: white;
   position: relative;
@@ -114,25 +118,22 @@ body {
 .keyboard-button .english {
   font-size: 12px;
   color: #999;
-  position: static;
-  align-self: flex-start;
 }
 
 .keyboard-button .pashto {
   font-size: 18px;
   color: white;
   font-weight: normal;
-  align-self: flex-end;
 }
 
 .keyboard-button.keyboard-space {
-  width: 300px;
+  width: auto;
+  flex: 3;
 }
 
 /* Special buttons */
 .keyboard-button.function-key {
-  background: #222;
-  min-width: 50px;
+  flex: 1.5;
 }
 
 .keyboard-close,
