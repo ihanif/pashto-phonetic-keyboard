@@ -1,11 +1,3 @@
-/* document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const text = params.get('text');
-  if (text) {
-    const textarea = document.getElementById('popup-input');
-    textarea.value = text;
-  }
-}); */
 class PhoneticPashtoKeyboard {
   constructor(isKeyboardEnabled = false, isKeybindingEnabled = false, isShiftActive = false, ) {
     this.isShiftActive = isShiftActive;
@@ -146,6 +138,8 @@ class PhoneticPashtoKeyboard {
     const inputs = document.querySelectorAll('textarea, [contenteditable="true"]');
     inputs.forEach(input => this.addKeyboard(input));
 
+    this.captureKeyboardInput();
+
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         mutation.addedNodes.forEach(node => {
@@ -161,6 +155,44 @@ class PhoneticPashtoKeyboard {
     observer.observe(document.body, {
       childList: true,
       subtree: true
+    });
+  }
+
+  captureKeyboardInput() {
+    document.addEventListener("keydown", (event) => {
+      if (!this.activeInput || !this.isKeybindingEnabled) return;
+    
+      switch (event.key) {
+        case "Shift":
+          this.isShiftActive = !this.isShiftActive;
+          this.updateKeyboardOverlay();
+          break;
+        case "Caps":
+          // Handle Caps toggle
+          break;
+        case "Enter":
+          event.preventDefault();
+          this.insertText("\n", false, this.activeInput.selectionStart, this.activeInput.selectionEnd);
+          break;
+        case "Tab":
+          event.preventDefault();
+          this.insertText("\t", false, this.activeInput.selectionStart, this.activeInput.selectionEnd);
+          break;
+        case "Delete":
+          event.preventDefault();
+          handleButtonClick("Delete");
+          break;
+        case "Alt":
+        case "Ctrl":
+        case "Cmd":
+          event.preventDefault();
+          break;
+        default:
+          if (this.pashtoMap[event.key]) {
+            event.preventDefault();
+            this.insertText(this.pashtoMap[event.key], false, this.activeInput.selectionStart, this.activeInput.selectionEnd);
+          }
+      }
     });
   }
 
@@ -336,6 +368,36 @@ class PhoneticPashtoKeyboard {
     }
   }
 
+  updateKeyboardOverlay() {
+    const overlay = document.getElementById("keyboard-overlay");
+    if (!overlay) return;
+    
+    overlay.querySelectorAll(".keyboard-row").forEach(rowDiv => rowDiv.remove());
+  
+    this.qwertyLayout.forEach(row => {
+      const rowDiv = document.createElement("div");
+      rowDiv.className = "keyboard-row";
+  
+      row.forEach(key => {
+        const button = document.createElement("button");
+        button.className = `keyboard-button ${key === "Space" ? "keyboard-space" : ""}`;
+        
+        const displayKey = this.isShiftActive ? (this.shiftMap[key] || key) : key;
+        const displayPashto = this.pashtoMap[displayKey] || "";
+        
+        button.innerHTML = `
+          <span class="english">${displayKey}</span>
+          <span class="pashto">${displayPashto}</span>
+        `;
+        
+        button.addEventListener("click", () => this.handleButtonClick(key));
+        rowDiv.appendChild(button);
+      });
+  
+      overlay.appendChild(rowDiv);
+    });
+  }
+
   insertText(text, hasSelection, start, end) {
     if (this.activeInput.isContentEditable) {
       const selection = window.getSelection();
@@ -408,12 +470,5 @@ class PhoneticPashtoKeyboard {
     }
   }
 }
-
-
-// document.addEventListener("DOMContentLoaded", createKeyboardOverlay);
-/* document.addEventListener("DOMContentLoaded", () => {
-  const keyboard = new PhoneticPashtoKeyboard(false, false, false);
-  keyboard.initialize();
-}); */
 
 export { PhoneticPashtoKeyboard };
