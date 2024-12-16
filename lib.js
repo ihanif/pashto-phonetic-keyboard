@@ -12,6 +12,134 @@ class PhoneticPashtoKeyboard {
     this.isKeyboardEnabled = isKeyboardEnabled;
     this.isKeybindingEnabled = isKeybindingEnabled;
     this.activeInput = null;
+    this.pashtoMap = {
+      a: "ا",
+      A: "آ",
+      b: "ب",
+      B: "",
+      c: "چ",
+      C: "ث",
+      d: "د",
+      D: "ډ",
+      e: "ع",
+      E: "ږ",
+      f: "ف",
+      F: "",
+      g: "ګ",
+      G: "غ",
+      h: "ح",
+      H: "ځ",
+      i: "ي",
+      I: "ې",
+      j: "ج",
+      J: "ض",
+      k: "ک",
+      K: "خ",
+      l: "ل",
+      L: "",
+      m: "م",
+      M: "",
+      n: "ن",
+      N: "ڼ",
+      o: "ه",
+      O: "ۀ",
+      p: "پ",
+      P: "څ",
+      q: "ق",
+      Q: "ښ",
+      r: "ر",
+      R: "ړ",
+      s: "س",
+      S: "ص",
+      t: "ت",
+      T: "ټ",
+      u: "ئ",
+      U: "ۍ",
+      v: "ط",
+      V: "ظ",
+      w: "و",
+      W: "ؤ",
+      x: "ش",
+      X: "ژ",
+      y: "ے",
+      Y: "ی",
+      z: "ز",
+      Z: "ذ",
+      "?": "؟",
+      ";": "؛",
+      ",": "،",
+      ".": "۔",
+      0: "۰",
+      1: "۱",
+      2: "۲",
+      3: "۳",
+      4: "۴",
+      5: "۵",
+      6: "۶",
+      7: "۷",
+      8: "۸",
+      9: "۹",
+    };
+    this.qwertyLayout = [
+      ["Delete","=", "-", "0", "9", "8", "7", "6", "5", "4", "3", "2", "1", "`", "§"],
+      ["\\", "]", "[", "p", "o", "i", "u", "y", "t", "r", "e", "w", "q", "Tab"],
+      ["Enter", "'", ";", "l", "k", "j", "h", "g", "f", "d", "s", "a", "Caps"],
+      ["Shift", "/", ".", ",", "m", "n", "b", "v", "c", "x", "z", "Shift"],
+      ["Ctrl", "Alt", "Cmd", "Space", "Cmd", "Alt", "Ctrl"],
+    ];
+    
+    this.shiftMap = {
+      "`": "~",
+      1: "!",
+      2: "@",
+      3: "#",
+      4: "$",
+      5: "%",
+      6: "^",
+      7: "&",
+      8: "*",
+      9: "(",
+      0: ")",
+      "-": "_",
+      "=": "+",
+      q: "Q",
+      w: "W",
+      e: "E",
+      r: "R",
+      t: "T",
+      y: "Y",
+      u: "U",
+      i: "I",
+      o: "O",
+      p: "P",
+      "[": "{",
+      "]": "}",
+      "\\": "|",
+      a: "A",
+      s: "S",
+      d: "D",
+      f: "F",
+      g: "G",
+      h: "H",
+      j: "J",
+      k: "K",
+      l: "L",
+      ";": ":",
+      "'": '"',
+      Enter: "Enter",
+      z: "Z",
+      x: "X",
+      c: "C",
+      v: "V",
+      b: "B",
+      n: "N",
+      m: "M",
+      ",": "<",
+      ".": ">",
+      "/": "?",
+      Shift: "Shift",
+      Space: " ",
+    };
   }
 
   initialize() {
@@ -143,7 +271,7 @@ class PhoneticPashtoKeyboard {
     toolbar.appendChild(closeBtn);
     overlay.appendChild(toolbar);
 
-    qwertyLayout.forEach(row => {
+    this.qwertyLayout.forEach(row => {
       const rowDiv = document.createElement("div");
       rowDiv.className = "keyboard-row";
 
@@ -151,8 +279,8 @@ class PhoneticPashtoKeyboard {
         const button = document.createElement("button");
         button.className = `keyboard-button ${key === "Space" ? "keyboard-space" : ""}`;
 
-        const displayKey = this.isShiftActive ? (shiftMap[key] || key) : key;
-        const displayPashto = pashtoMap[displayKey] || "";
+        const displayKey = this.isShiftActive ? (this.shiftMap[key] || key) : key;
+        const displayPashto = this.pashtoMap[displayKey] || "";
 
         button.innerHTML = `
           <span class="english">${displayKey}</span>
@@ -202,8 +330,8 @@ class PhoneticPashtoKeyboard {
         }
         break;
       default:
-        const actualKey = this.isShiftActive ? shiftMap[key] || key : key;
-        const char = pashtoMap[actualKey] || actualKey;
+        const actualKey = this.isShiftActive ? this.shiftMap[key] || key : key;
+        const char = this.pashtoMap[actualKey] || actualKey;
         this.insertText(char, hasSelection, start, end);
     }
   }
@@ -231,11 +359,11 @@ class PhoneticPashtoKeyboard {
     if (!this.isKeybindingEnabled || !this.activeInput) return;
 
     const key = event.key.toLowerCase();
-    if (pashtoMap[key]) {
+    if (this.pashtoMap[key]) {
       event.preventDefault();
       const start = this.activeInput.selectionStart;
       const end = this.activeInput.selectionEnd;
-      this.insertText(pashtoMap[key], start !== end, start, end);
+      this.insertText(this.pashtoMap[key], start !== end, start, end);
     }
   }
 
@@ -283,7 +411,9 @@ class PhoneticPashtoKeyboard {
 
 
 // document.addEventListener("DOMContentLoaded", createKeyboardOverlay);
-document.addEventListener("DOMContentLoaded", () => {
+/* document.addEventListener("DOMContentLoaded", () => {
   const keyboard = new PhoneticPashtoKeyboard(false, false, false);
   keyboard.initialize();
-});
+}); */
+
+export { PhoneticPashtoKeyboard };
