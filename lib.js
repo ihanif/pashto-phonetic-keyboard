@@ -71,13 +71,14 @@ class PhoneticPashtoKeyboard {
       7: "۷",
       8: "۸",
       9: "۹",
+      Space: " ",
     };
     this.qwertyLayout = [
       ["Delete","=", "-", "0", "9", "8", "7", "6", "5", "4", "3", "2", "1", "`", "§"],
       ["\\", "]", "[", "p", "o", "i", "u", "y", "t", "r", "e", "w", "q", "Tab"],
       ["Enter", "'", ";", "l", "k", "j", "h", "g", "f", "d", "s", "a", "Caps"],
       ["Shift", "/", ".", ",", "m", "n", "b", "v", "c", "x", "z", "Shift"],
-      ["Ctrl", "Alt", "Cmd", "Space", "Cmd", "Alt", "Ctrl"],
+      ["Space", ],
     ];
     
     this.shiftMap = {
@@ -129,7 +130,6 @@ class PhoneticPashtoKeyboard {
       ",": "<",
       ".": ">",
       "/": "?",
-      Shift: "Shift",
       Space: " ",
     };
   }
@@ -145,7 +145,6 @@ class PhoneticPashtoKeyboard {
         mutation.addedNodes.forEach(node => {
           if (node.nodeType === 1) {
             const inputs = node.querySelectorAll('textarea, [contenteditable="true"]');
-            console.log(inputs);
             inputs.forEach(input => this.addKeyboard(input));
           }
         });
@@ -208,7 +207,6 @@ class PhoneticPashtoKeyboard {
   }
 
   addKeyboard(inputElement) {
-    console.log(inputElement);
     if (inputElement.dataset.hasPashtoKeyboard) return;
     inputElement.dataset.hasPashtoKeyboard = 'true';
 
