@@ -1,6 +1,6 @@
 class PhoneticPashtoKeyboard {
-  constructor(isKeyboardEnabled = false, isKeybindingEnabled = false, isShiftActive = false, ) {
-    this.isShiftActive = isShiftActive;
+  constructor(isKeyboardEnabled = false, isKeybindingEnabled = false) {
+    this.isShiftActive = false;
     this.isKeyboardEnabled = isKeyboardEnabled;
     this.isKeybindingEnabled = isKeybindingEnabled;
     this.activeInput = null;
@@ -16,7 +16,7 @@ class PhoneticPashtoKeyboard {
       e: "ع",
       E: "ږ",
       f: "ف",
-      F: "",
+      F: "گ",
       g: "ګ",
       G: "غ",
       h: "ح",
@@ -28,7 +28,7 @@ class PhoneticPashtoKeyboard {
       k: "ک",
       K: "خ",
       l: "ل",
-      L: "",
+      L: "ء",
       m: "م",
       M: "",
       n: "ن",
@@ -183,9 +183,20 @@ class PhoneticPashtoKeyboard {
           handleButtonClick("Delete");
           break;
         case "Alt":
+          // Allow default behavior for Alt key
+          break;
         case "Ctrl":
         case "Cmd":
-          event.preventDefault();
+          if (event.key === "c") {
+            event.preventDefault();
+            document.execCommand("copy");
+          } else if (event.key === "v") {
+            event.preventDefault();
+            document.execCommand("paste");
+          } else if (event.key === "p") {
+            event.preventDefault();
+            document.execCommand("paste");
+          }
           break;
         default:
           if (this.pashtoMap[event.key]) {
@@ -307,7 +318,7 @@ class PhoneticPashtoKeyboard {
       const rowDiv = document.createElement("div");
       rowDiv.className = "keyboard-row";
 
-      row.forEach(key => {
+      row.slice().reverse().forEach(key => {
         const button = document.createElement("button");
         button.className = `keyboard-button ${key === "Space" ? "keyboard-space" : ""}`;
 
@@ -373,27 +384,27 @@ class PhoneticPashtoKeyboard {
     if (!overlay) return;
     
     overlay.querySelectorAll(".keyboard-row").forEach(rowDiv => rowDiv.remove());
-  
+
     this.qwertyLayout.forEach(row => {
       const rowDiv = document.createElement("div");
       rowDiv.className = "keyboard-row";
-  
-      row.forEach(key => {
+
+      row.slice().reverse().forEach(key => {
         const button = document.createElement("button");
         button.className = `keyboard-button ${key === "Space" ? "keyboard-space" : ""}`;
-        
+
         const displayKey = this.isShiftActive ? (this.shiftMap[key] || key) : key;
         const displayPashto = this.pashtoMap[displayKey] || "";
-        
+
         button.innerHTML = `
           <span class="english">${displayKey}</span>
           <span class="pashto">${displayPashto}</span>
         `;
-        
+
         button.addEventListener("click", () => this.handleButtonClick(key));
         rowDiv.appendChild(button);
       });
-  
+
       overlay.appendChild(rowDiv);
     });
   }
