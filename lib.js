@@ -60,7 +60,7 @@ class PhoneticPashtoKeyboard {
       "?": "؟",
       ";": "؛",
       ",": "،",
-      ".": "۔",
+      ".": ".",
       0: "۰",
       1: "۱",
       2: "۲",
@@ -157,12 +157,53 @@ class PhoneticPashtoKeyboard {
     });
   }
 
+  /**
+   * Utility function to check if the current key event is a keyboard shortcut
+   * @param {KeyboardEvent} event - The keyboard event to check
+   * @return {boolean} - True if the event is a keyboard shortcut that should be preserved
+   */
+  isKeyboardShortcut(event) {
+    // Check for common shortcuts with modifier keys
+    if (event.ctrlKey || event.metaKey) {
+      // Common shortcuts: Ctrl/Cmd + A/C/V/X/Z/F/P/S
+      const commonShortcuts = ['a', 'c', 'v', 'x', 'z', 'f', 'p', 's'];
+      if (commonShortcuts.includes(event.key.toLowerCase())) {
+        return true;
+      }
+    }
+    
+    // Navigation keys
+    const navigationKeys = [
+      'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+      'PageUp', 'PageDown', 'Home', 'End',
+      'Tab', 'Escape'
+    ];
+    
+    if (navigationKeys.includes(event.key)) {
+      return true;
+    }
+    
+    // Detect browser-specific shortcuts
+    // Allow Alt/Option key combinations for special characters on macOS
+    if (event.altKey) {
+      return true;
+    }
+    
+    return false;
+  }
+
   captureKeyboardInput() {
     document.addEventListener("keydown", (event) => {
       if (!this.activeInput || !this.isKeybindingEnabled) return;
     
+      // Check for shortcuts that should be preserved
+      if (this.isKeyboardShortcut(event)) {
+        return;
+      }
+    
       switch (event.key) {
         case "Shift":
+          // Don't prevent default for Shift key to allow shift selection
           this.isShiftActive = !this.isShiftActive;
           this.updateKeyboardOverlay();
           break;
@@ -170,33 +211,16 @@ class PhoneticPashtoKeyboard {
           // Handle Caps toggle
           break;
         case "Enter":
-          event.preventDefault();
-          this.insertText("\n", false, this.activeInput.selectionStart, this.activeInput.selectionEnd);
-          break;
-        case "Tab":
-          event.preventDefault();
-          this.insertText("\t", false, this.activeInput.selectionStart, this.activeInput.selectionEnd);
-          break;
-        case "Delete":
-          event.preventDefault();
-          handleButtonClick("Delete");
-          break;
-        case "Alt":
-          // Allow default behavior for Alt key
-          break;
-        case "Ctrl":
-        case "Cmd":
-          if (event.key === "c") {
+          // Don't prevent default for Enter key in most contexts
+          if (this.activeInput.tagName.toLowerCase() !== "textarea" && !this.activeInput.getAttribute("contenteditable")) {
             event.preventDefault();
-            document.execCommand("copy");
-          } else if (event.key === "v") {
-            event.preventDefault();
-            document.execCommand("paste");
-          } else if (event.key === "p") {
-            event.preventDefault();
-            document.execCommand("paste");
+            this.insertText("\n", false, this.activeInput.selectionStart, this.activeInput.selectionEnd);
           }
           break;
+        case "Delete":
+        case "Backspace":
+          // Let Delete/Backspace work normally
+          return;
         default:
           if (this.pashtoMap[event.key]) {
             event.preventDefault();
@@ -428,7 +452,12 @@ class PhoneticPashtoKeyboard {
 
   handleKeyboardInput(event) {
     if (!this.isKeybindingEnabled || !this.activeInput) return;
-
+    
+    // Check for shortcuts that should be preserved
+    if (this.isKeyboardShortcut(event)) {
+      return;
+    }
+    
     const key = event.key.toLowerCase();
     if (this.pashtoMap[key]) {
       event.preventDefault();

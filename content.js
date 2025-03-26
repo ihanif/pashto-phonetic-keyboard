@@ -54,7 +54,7 @@ this.pashtoMap = {
   "?": "؟",
   ";": "؛",
   ",": "،",
-  ".": "۔",
+  ".": ".",
   0: "۰",
   1: "۱",
   2: "۲",
@@ -291,6 +291,9 @@ function insertText(text, hasSelection, start, end) {
 function handleKeyPress(event) {
   if (!isKeybindingEnabled) return;
   
+  // Allow special key combinations to work (Ctrl/Cmd+A, Ctrl/Cmd+C, etc.)
+  if (event.ctrlKey || event.metaKey) return;
+  
   const key = event.key;
   if (pashtoMap[key]) {
     event.preventDefault();
@@ -354,11 +357,70 @@ function toggleKeyboard() {
   }
 }
 
+function handleKeyboardInput(event) {
+  if (!isKeybindingEnabled || !activeInput) return;
+  
+  // Allow special key combinations to work (Ctrl/Cmd+A, Ctrl/Cmd+C, etc.)
+  if (event.ctrlKey || event.metaKey) return;
+  
+  const key = event.key.toLowerCase();
+  if (pashtoMap[key]) {
+    event.preventDefault();
+    const start = activeInput.selectionStart;
+    const end = activeInput.selectionEnd;
+    insertText(pashtoMap[key], start !== end, start, end);
+  }
+}
+
+/**
+ * Utility function to check if the current key event is a keyboard shortcut
+ * @param {KeyboardEvent} event - The keyboard event to check
+ * @return {boolean} - True if the event is a keyboard shortcut that should be preserved
+ */
+function isKeyboardShortcut(event) {
+  // Check for common shortcuts with modifier keys
+  if (event.ctrlKey || event.metaKey) {
+    // Common shortcuts: Ctrl/Cmd + A/C/V/X/Z/F/P/S
+    const commonShortcuts = ['a', 'c', 'v', 'x', 'z', 'f', 'p', 's'];
+    if (commonShortcuts.includes(event.key.toLowerCase())) {
+      return true;
+    }
+  }
+  
+  // Navigation keys
+  const navigationKeys = [
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+    'PageUp', 'PageDown', 'Home', 'End',
+    'Tab', 'Escape'
+  ];
+  
+  if (navigationKeys.includes(event.key)) {
+    return true;
+  }
+  
+  // Detect browser-specific shortcuts
+  // Allow Alt/Option key combinations for special characters on macOS
+  if (event.altKey) {
+    return true;
+  }
+  
+  return false;
+}
+
+// Replace existing event listener with updated one
+document.removeEventListener("keydown", (event) => {}); // Remove any previous listener
+
 document.addEventListener("keydown", (event) => {
   if (!activeInput || !isKeybindingEnabled) return;
 
+  // Check for shortcuts that should be preserved
+  if (isKeyboardShortcut(event)) {
+    return;
+  }
+  
   switch (event.key) {
     case "Shift":
+      // Don't prevent default for Shift key to allow shift selection
       isShiftActive = !isShiftActive;
       updateKeyboardOverlay();
       break;
@@ -366,22 +428,16 @@ document.addEventListener("keydown", (event) => {
       // Handle Caps toggle
       break;
     case "Enter":
-      event.preventDefault();
-      insertText("\n", false, activeInput.selectionStart, activeInput.selectionEnd);
-      break;
-    case "Tab":
-      event.preventDefault();
-      insertText("\t", false, activeInput.selectionStart, activeInput.selectionEnd);
+      // Don't prevent default for Enter key in most contexts
+      if (activeInput.tagName.toLowerCase() !== "textarea" && !activeInput.getAttribute("contenteditable")) {
+        event.preventDefault();
+        insertText("\n", false, activeInput.selectionStart, activeInput.selectionEnd);
+      }
       break;
     case "Delete":
-      event.preventDefault();
-      handleButtonClick("Delete");
-      break;
-    case "Alt":
-    case "Ctrl":
-    case "Cmd":
-      event.preventDefault();
-      break;
+    case "Backspace":
+      // Let Delete/Backspace work normally
+      return;
     default:
       if (pashtoMap[event.key]) {
         event.preventDefault();
@@ -435,18 +491,6 @@ function initializePashtoKeyboard() {
 
 initializePashtoKeyboard();
 document.addEventListener('DOMContentLoaded', initializePashtoKeyboard);
-
-function handleKeyboardInput(event) {
-  if (!isKeybindingEnabled || !activeInput) return;
-  
-  const key = event.key.toLowerCase();
-  if (pashtoMap[key]) {
-    event.preventDefault();
-    const start = activeInput.selectionStart;
-    const end = activeInput.selectionEnd;
-    insertText(pashtoMap[key], start !== end, start, end);
-  }
-}
 
 function makeDraggable(element) {
   let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;

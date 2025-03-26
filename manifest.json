@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Pashto Phonetic Keyboard | پښتو فونیټیک کیبورډ",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "Pashto Phonetic Keyboard Chrome Extension helps you write Pashto quickly. It also has a virtual keyboard that you can use to type.",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "clipboardRead", "clipboardWrite"],
   "background": {
     "service_worker": "background.js"
   },
@@ -12,7 +12,8 @@
       "matches": ["<all_urls>"],
       "css": ["styles.css"],
       "js": ["content.js"],
-      "type": "module"
+      "type": "module",
+      "run_at": "document_end"
     }
   ],
   "action": {
