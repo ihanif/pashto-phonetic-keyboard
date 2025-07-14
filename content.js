@@ -1,4 +1,4 @@
-this.pashtoMap = {
+const pashtoMap = {
   a: "ا",
   A: "آ",
   b: "ب",
@@ -68,7 +68,7 @@ this.pashtoMap = {
   Space: " ",
 };
 
-this.qwertyLayout = [
+const qwertyLayout = [
   ["Delete","=", "-", "0", "9", "8", "7", "6", "5", "4", "3", "2", "1", "`", "§"],
   ["\\", "]", "[", "p", "o", "i", "u", "y", "t", "r", "e", "w", "q", "Tab"],
   ["Enter", "'", ";", "l", "k", "j", "h", "g", "f", "d", "s", "a", "Caps"],
@@ -76,7 +76,7 @@ this.qwertyLayout = [
   ["Space", ],
 ];
 
-this.shiftMap = {
+const shiftMap = {
   "`": "~",
   1: "!",
   2: "@",
