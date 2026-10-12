@@ -19,9 +19,11 @@ positions you already know (p → پ, t → ت, and so on).
 
 1. Download and open the disk image (or folder).
 2. Double-click **Install Pashto Keyboard.command**.
-   - If macOS says the file "cannot be opened because it is from an
-     unidentified developer": right-click (or Control-click) the file,
-     choose *Open*, then click *Open* again in the dialog.
+   - macOS will say it could not verify the file. Click *Done* (not
+     *Move to Bin*), then open System Settings > Privacy & Security,
+     scroll down to *Security*, click *Open Anyway* next to "Install
+     Pashto Keyboard.command", enter your Mac password, and click *Open*.
+     Then double-click the installer again.
 3. Follow the steps shown in the window. System Settings opens automatically:
    - Click *Edit…* next to Input Sources, then *+*.
    - Choose *Pashto* in the language list, select
@@ -37,8 +39,10 @@ Control-Space.
 ۱. ډاونلوډ شوی فایل پرانيزئ.
 
 ۲. په **Install Pashto Keyboard.command** باندې دوه ځله کليک وکړئ.
-که مېک ووايي چې فایل نه پرانيستل کېږي، په فایل باندې ښي-کليک وکړئ،
-*Open* وټاکئ، او بيا په ډيالوګ کې *Open* کليک کړئ.
+که مېک ووايي چې فایل نه شي تاييدولی، *Done* کليک کړئ (نه *Move to Bin*)، بيا
+System Settings > Privacy & Security ته ورشئ، لاندې *Security* ته ښکته شئ،
+د "Install Pashto Keyboard.command" تر څنګ په *Open Anyway* کليک وکړئ، د
+مېک پاسورډ ورکړئ او *Open* کليک کړئ. بيا انسټالر بيا دوه ځله کليک کړئ.
 
 ۳. سيسټم سېټېنګز به پخپله پرانيستل شي. د Input Sources تر څنګ په *Edit…*
 کليک وکړئ، بيا *+*، په لیست کې *Pashto* وټاکئ، *Pashto Phonetic By
