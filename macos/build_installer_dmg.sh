@@ -14,13 +14,10 @@ DMG_NAME="PashtoDAOPhoneticKeyboard_v3.dmg"
 STAGING="$(mktemp -d -t pashtodao_dmg)"
 trap 'rm -rf "$STAGING"' EXIT
 
-cp -R "$SCRIPT_DIR/PashtoDAOPhoneticKeyboard.bundle" "$STAGING/"
-cp "$SCRIPT_DIR/Install Pashto Keyboard.command" "$STAGING/"
-cp "$SCRIPT_DIR/Uninstall Pashto Keyboard.command" "$STAGING/"
+[ -d "$SCRIPT_DIR/build" ] || "$SCRIPT_DIR/build_apps.sh"
+cp -R "$SCRIPT_DIR/build/Install Pashto Keyboard.app" \
+      "$SCRIPT_DIR/build/Uninstall Pashto Keyboard.app" "$STAGING/"
 cp "$SCRIPT_DIR/README.md" "$STAGING/"
-
-chmod +x "$STAGING/Install Pashto Keyboard.command" \
-         "$STAGING/Uninstall Pashto Keyboard.command"
 
 # Strip Finder metadata so the DMG is clean. Only the quarantine flag is
 # removed; other xattrs may hold codesign signatures for the scripts.

@@ -31,15 +31,19 @@ if [ -z "$IDENTITY" ]; then
 fi
 echo "Signing with: $IDENTITY"
 
-# 1. Sign the keyboard bundle and the installer scripts.
-codesign --force --timestamp --sign "$IDENTITY" "$BUNDLE"
+# 1. Build the apps, then sign inside-out: nested keyboard bundle first, then each app.
+"$SCRIPT_DIR/build_apps.sh"
+APP="$SCRIPT_DIR/build/Install Pashto Keyboard.app"
+UNAPP="$SCRIPT_DIR/build/Uninstall Pashto Keyboard.app"
 codesign --force --timestamp --sign "$IDENTITY" \
-    "$SCRIPT_DIR/Install Pashto Keyboard.command" \
-    "$SCRIPT_DIR/Uninstall Pashto Keyboard.command"
-codesign --verify --strict "$BUNDLE"
-echo "Bundle signed."
+    "$APP/Contents/Resources/PashtoDAOPhoneticKeyboard.bundle"
+for a in "$APP" "$UNAPP"; do
+    codesign --force --timestamp --options runtime --sign "$IDENTITY" "$a"
+    codesign --verify --deep --strict "$a"
+done
+echo "Apps signed."
 
-# 2. Rebuild the DMG so it contains the signed files, then sign it.
+# 2. Package the signed apps into the DMG (build_apps.sh is skipped: ./build exists), sign it.
 "$SCRIPT_DIR/build_installer_dmg.sh"
 codesign --force --timestamp --sign "$IDENTITY" "$DMG"
 echo "DMG signed."

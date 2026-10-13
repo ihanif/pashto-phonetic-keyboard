@@ -18,9 +18,9 @@ positions you already know (p → پ, t → ت, and so on).
 ## How to install
 
 1. Download and open the disk image (or folder).
-2. Double-click **Install Pashto Keyboard.command**.
+2. Double-click **Install Pashto Keyboard** (the app) and click *Install*.
    - If macOS asks "Are you sure you want to open it?", click *Open*.
-3. Follow the steps shown in the window. System Settings opens automatically:
+3. Follow the steps shown in the window. Click *Open Keyboard Settings* when asked:
    - Click *Edit…* next to Input Sources, then *+*.
    - Choose *Pashto* in the language list, select
      *Pashto Phonetic By Pashto DAO*, and click *Add*.
@@ -34,7 +34,7 @@ Control-Space.
 
 ۱. ډاونلوډ شوی فایل پرانيزئ.
 
-۲. په **Install Pashto Keyboard.command** باندې دوه ځله کليک وکړئ.
+۲. په **Install Pashto Keyboard** اپ باندې دوه ځله کليک وکړئ او *Install* کليک کړئ.
 که مېک وپوښتي چې ايا غواړئ پرانيزئ، *Open* کليک کړئ.
 
 ۳. سيسټم سېټېنګز به پخپله پرانيستل شي. د Input Sources تر څنګ په *Edit…*
@@ -46,7 +46,7 @@ Pashto DAO* غوره کړئ او *Add* کليک کړئ.
 
 ## How to uninstall
 
-Double-click **Uninstall Pashto Keyboard.command**, then remove the keyboard
+Double-click **Uninstall Pashto Keyboard**, then remove the keyboard
 from System Settings > Keyboard > Input Sources > Edit… (select it and click
 the minus button).
 
@@ -55,9 +55,9 @@ the minus button).
 | File | Purpose |
 |------|---------|
 | `PashtoDAOPhoneticKeyboard.bundle` | The keyboard layout itself |
-| `Install Pashto Keyboard.command` | Double-click installer |
-| `Uninstall Pashto Keyboard.command` | Double-click uninstaller |
-| `build_installer_dmg.sh` | For maintainers: packages this folder into a DMG |
+| `installer.applescript` | Source of the installer app |
+| `uninstaller.applescript` | Source of the uninstaller app |
+| `build_apps.sh`, `build_installer_dmg.sh`, `sign_and_notarize.sh` | For maintainers: build the apps, package the DMG, sign and notarize it |
 
 ## For maintainers
 
