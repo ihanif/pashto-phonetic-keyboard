@@ -44,6 +44,37 @@ Pashto DAO* غوره کړئ او *Add* کليک کړئ.
 ۴. که کيبورډ په لیست کې نه ښکاري، له سيسټم څخه ووځئ (Log Out) او بيا
 ننوځئ، بيا درېيم ګام تکرار کړئ.
 
+## Install a Pashto font (optional)
+
+The keyboard types Pashto letters, but the text looks best in a font designed
+for them. [Scheherazade New](https://software.sil.org/scheherazade/) is a free
+Naskh font from SIL International (SIL Open Font License) that covers all
+Pashto letters.
+
+1. Go to the
+   [Scheherazade New releases page](https://github.com/silnrsi/font-scheherazade/releases/latest)
+   and download `ScheherazadeNew-<version>.zip`.
+2. Double-click the zip to unzip it.
+3. Select all the `.ttf` files inside (Command-A) and double-click them.
+   Font Book opens. Click *Install Font*.
+4. Quit and reopen any app that was open (Pages, Word, Notes, and so on),
+   then choose *Scheherazade New* from the font menu.
+
+To install for terminal users instead: copy the `.ttf` files into
+`~/Library/Fonts`.
+
+### په پښتو کې
+
+۱. د Scheherazade New د ډاونلوډ پاڼې ته ورشئ او `ScheherazadeNew` zip فایل ډاونلوډ کړئ.
+
+۲. zip فایل دوه ځله کليک کړئ چې پرانيستل شي.
+
+۳. ټول `.ttf` فایلونه وټاکئ (Command-A) او دوه ځله يې کليک کړئ. Font Book به
+پرانيستل شي، *Install Font* کليک کړئ.
+
+۴. هغه اپ چې پرانيستی و وتړئ او بيا يې پرانيزئ، بيا د فونټ له لیست څخه
+*Scheherazade New* وټاکئ.
+
 ## How to uninstall
 
 Double-click **Uninstall Pashto Keyboard**, then remove the keyboard
